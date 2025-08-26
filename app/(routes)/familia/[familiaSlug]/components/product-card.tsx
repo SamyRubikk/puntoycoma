@@ -6,6 +6,7 @@ import { Expand, ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/formatPrice";
 import { useCart } from "@/hooks/use-cart";
+import ImagenProduct from "@/components/shared/imagen";
 
 type FlatImg = {
   id: number;
@@ -34,6 +35,8 @@ type RelImg = {
 type ProductCardProps = { product: ProductType | any };
 
 const ProductCard = ({ product }: ProductCardProps) => {
+   const router = useRouter()
+   const {addItem} = useCart ()
   // Soporta plano y attributes
   const slug =
     product?.slug ?? product?.attributes?.slug;
@@ -76,8 +79,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   // 3) Armamos la URL absoluta con el backend
   const BASE = (process.env.NEXT_PUBLIC_BACKEND_URL || "").replace(/\/$/, "");
 
-  const router = useRouter()
-  const {addItem} = useCart ()
+ 
   return (
     <Link
       href={`/product/${slug}`}
@@ -96,11 +98,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <CarouselContent>
           {normalized.map((image: any) => (
             <CarouselItem key={image.id} className="group">
-              <img
-                src={`${BASE}${image.url.startsWith("/") ? image.url : `/${image.url}`}`}
-                alt={image.alt}
-                className="rounded-xl"
-              />
+              <ImagenProduct product={product}/>
               <div className="absolute w-full px-6 transition duration-200 opacity-0 group-hover:opacity-100 bottom-5">
                  <div className="flex justify-center gap-x-6">
                     <IconButton onClick={() => router.push(`/product/${product.attributes.slug}`)} icon={<Expand size={20} className="text-gray-600"/>} />
