@@ -29,7 +29,7 @@ const FeaturedProducts = () => {
             const { id, images, slug, nombre, tecnicaImpresion } = product;
 
             const imgUrl = images?.data?.[0]?.attributes?.url
-              ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${images.data[0].attributes.url}`
+              ? `${images.data[0].attributes.url}`
               : "/placeholder.png";
 
             return (
