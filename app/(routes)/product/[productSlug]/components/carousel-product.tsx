@@ -24,7 +24,7 @@ interface CarouselProductProps {
 }
 
 const CarouselProduct = ({ images }: CarouselProductProps) => {
-  const base = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
+  const base ="";
 
   return (
     <div className="sm:px-16">

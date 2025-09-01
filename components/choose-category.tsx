@@ -50,7 +50,7 @@ console.log(result);
               <div className="w-full aspect-square overflow-hidden rounded-lg">
                 {imgUrl ? (
                   <img
-                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${imgUrl}`}
+                    src={`${imgUrl}`}
                     alt={name}
                     className="w-full h-full object-cover transition duration-300 ease-in-out hover:scale-110"
                   />
