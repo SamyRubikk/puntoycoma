@@ -1,6 +1,5 @@
+// featured-products.tsx
 "use client";
-// eslint-disable-next-line @next/next/no-img-element
-
 import { useGetFeaturedProducts } from "@/api/useGetFeaturedProducts";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
 import SkeletonSchema from "./skeletonSchema";
@@ -10,13 +9,12 @@ import { Expand, ShoppingCart } from "lucide-react";
 import IconButton from "./icon-button";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/hooks/use-cart";
+import ImagenProduct from "@/components/shared/imagen"; // <- IMPORTA EL COMPONENTE
 
 const FeaturedProducts = () => {
   const { loading, result } = useGetFeaturedProducts();
   const router = useRouter();
   const { addItem } = useCart();
-
-  
 
   return (
     <div className="max-w-6xl py-4 mx-auto sm:py-16 sm:px-24">
@@ -26,11 +24,7 @@ const FeaturedProducts = () => {
           {loading && <SkeletonSchema grid={3} />}
 
           {result?.map((product: ProductType) => {
-            const { id, images, slug, nombre, tecnicaImpresion } = product;
-
-            const imgUrl = images?.data?.[0]?.attributes?.url
-              ? `${images.data[0].attributes.url}`
-              : "/placeholder.png";
+            const { id, slug, nombre, tecnicaImpresion } = product;
 
             return (
               <CarouselItem
@@ -41,10 +35,9 @@ const FeaturedProducts = () => {
                   <Card className="py-4 border border-gray-200 shadow-none max-w-[360px] mx-auto">
                     <CardContent className="relative flex items-center justify-center px-6 py-2">
                       <div className="w-full aspect-[4/3] sm:aspect-rectangle overflow-hidden">
-                        <img
-                          className="w-full h-full object-contain"
-                          src={imgUrl}
-                          alt={nombre ?? "Producto"}
+                        <ImagenProduct
+                          product={product}
+                          imageClassName="w-full h-full object-contain"
                         />
                         <div className="absolute w-full px-6 transition duration-200 opacity-0 group-hover:opacity-100 bottom-5">
                           <div className="flex justify-center gap-x-6">
@@ -54,7 +47,7 @@ const FeaturedProducts = () => {
                               className="text-gray-600"
                             />
                             <IconButton
-                              onClick={() => addItem(product)} // ahora es plano
+                              onClick={() => addItem(product)}
                               icon={<ShoppingCart size={20} />}
                               className="text-gray-600"
                             />

@@ -1,26 +1,28 @@
+// imagen.tsx
 import { ProductType } from "@/types/product";
 import { useRouter } from "next/navigation";
 
-interface CartItemProps {
+interface ImagenProps {
   product: ProductType;
+  imageClassName?: string;      // <- NUEVO
 }
 
-// Codifica espacios si vienen en la URL y resuelve relativas vs absolutas
 function resolveImageUrl(u?: string) {
   if (!u) return undefined;
-  const withSpacesEncoded = u.includes(" ") ? u.replace(/ /g, "%20") : u;
-  if (/^https?:\/\//i.test(withSpacesEncoded)) return withSpacesEncoded; // absoluta
-  return `${process.env.NEXT_PUBLIC_BACKEND_URL}${withSpacesEncoded}`;   // relativa
+  const fixed = u.includes(" ") ? u.replace(/ /g, "%20") : u;
+  return /^https?:\/\//i.test(fixed)
+    ? fixed
+    : `${process.env.NEXT_PUBLIC_BACKEND_URL}${fixed}`;
 }
 
-const ImagenProduct = ({ product }: CartItemProps) => {
+const ImagenProduct = ({ product, imageClassName }: ImagenProps) => {
   const router = useRouter();
   const fallback = "https://via.placeholder.com/128x128?text=Sin+imagen";
 
-  // 0) si el item ya trae miniatura plana (favoritos/detalle)
+  // 0) miniatura directa (ya lo usabas)
   const fromCart = (product as any).thumbnailUrl as string | undefined;
 
-  // NEW: 0.5) si viene de proveedor en `externalImages` (string | string[])
+  // 0.5) NUEVO: URL externa del proveedor
   const external = (() => {
     const ex = (product as any).externalImages as string[] | string | undefined;
     if (!ex) return undefined;
@@ -29,7 +31,7 @@ const ImagenProduct = ({ product }: CartItemProps) => {
     return undefined;
   })();
 
-  // 1) si `images` viene como ARREGLO plano (Insomnia shape)
+  // 1) arreglo plano
   const flatImg = Array.isArray((product as any).images)
     ? (
         (product as any).images.find((m: any) =>
@@ -40,7 +42,7 @@ const ImagenProduct = ({ product }: CartItemProps) => {
       )
     : undefined;
 
-  // 2) si `images` viene como { data: [...] } (Strapi clásico)
+  // 2) { data: [...] } de Strapi
   const dataImg = (product as any).images?.data
     ?.map((d: any) =>
       d?.attributes?.formats?.thumbnail?.url
@@ -49,18 +51,14 @@ const ImagenProduct = ({ product }: CartItemProps) => {
     )
     .find(Boolean);
 
-  // Orden de prioridad: miniatura directa -> URL externa -> imágenes Strapi
   const imgSrc = resolveImageUrl(fromCart ?? external ?? flatImg ?? dataImg) ?? fallback;
 
   return (
-    <div
-      className="cursor-pointer"
-      onClick={() => router.push(`/product/${(product as any).slug}`)}
-    >
+    <div className="cursor-pointer" onClick={() => router.push(`/product/${product.slug}`)}>
       <img
         src={imgSrc}
-        alt={(product as any).nombre ?? (product as any).name ?? "Product"}
-        className="w-24 h-24 sm:w-auto sm:h-32 rounded-md object-cover"
+        alt={(product as any).nombre ?? "Product"}
+        className={imageClassName ?? "w-24 h-24 sm:w-auto sm:h-32 rounded-md object-cover"}
         loading="lazy"
       />
     </div>
